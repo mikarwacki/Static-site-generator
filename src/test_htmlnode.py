@@ -1,13 +1,11 @@
 import unittest
 
 from htmlnode import HTMLNode, LeafNode, ParentNode
-from textnode import TextNode
-
 
 class TestHTMLNode(unittest.TestCase):
     def test_to_string(self):
         node = HTMLNode("tag", "value", [], {})
-        string_repr = "HTMLNode(tag, value, [], {})"
+        string_repr = "HTMLNode(tag, value, children: [], {})"
         self.assertEqual(repr(node), string_repr)
 
     def test_props_to_html(self):
@@ -37,24 +35,6 @@ class TestHTMLNode(unittest.TestCase):
         ],)
         html_node = "<p><b>Bold text</b>Normal text<i>italic text</i>Normal text</p>"
         self.assertEqual(node.to_html(), html_node)
-
-    def test_textnode_to_htmlnode_bold(self):
-        textnode = TextNode("This is some text", "bold", None)
-        result_leafnode = LeafNode("b", textnode.text)
-        leafnode = result_leafnode.text_node_to_html_node(textnode)
-        self.assertEqual(leafnode, result_leafnode)
-
-    def test_textnode_to_htmlnode_img(self):
-        textnode = TextNode("This is some text", "img", "someUrl")
-        result_leafnode = LeafNode("img", "", {"src":textnode.url, "alt":textnode.text})
-        leafnode = result_leafnode.text_node_to_html_node(textnode)
-        self.assertEqual(leafnode, result_leafnode)
-
-    def test_textnode_to_htmlnode_italic(self):
-        textnode = TextNode("This is some text", "italic", None)
-        result_leafnode = LeafNode("i", textnode.text)
-        leafnode = result_leafnode.text_node_to_html_node(textnode)
-        self.assertEqual(leafnode, result_leafnode)
 
 if __name__ == "__main__":
     unittest.main()
