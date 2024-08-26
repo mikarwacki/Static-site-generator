@@ -62,9 +62,8 @@ def block_to_block(block):
         return block_type_olist
     return block_type_paragraph
     
-def markdown_to_html(markdown):
+def markdown_to_html_node(markdown):
     blocks = markdown_to_blokcs(markdown)
-    print(f"printing block {blocks}")
     parents = []
     for block in blocks:
         parent = create_parent_node(block)
@@ -72,9 +71,8 @@ def markdown_to_html(markdown):
             parents.extend(parent)
         elif len(parent.children) > 0:
             parents.append(parent)
-    print(parents)
-    return list(map(lambda parent: parent.to_html(), parents))
-    
+    return ParentNode("div", parents)   
+
 def create_parent_node(block):
     block_type = block_to_block(block)
     if block_type == block_type_paragraph:
@@ -93,10 +91,8 @@ def create_parent_node(block):
 def create_paragraph(block):
     nodes = []
     lines = block.split("\n")
-    for line in lines:
-        if line.strip() != "":
-            nodes.extend(text_to_textnodes(line))
-            nodes.append(TextNode("\n", text_type_text))
+    text = " ".join(lines)
+    nodes.extend(text_to_textnodes(text))
     nodes = list(map(lambda textnode: text_node_to_html_node(textnode), nodes))
     return ParentNode("p", nodes)
 
@@ -105,26 +101,25 @@ def create_olist(block):
     lines = block.split("\n")
     for line in lines:
         line = re.split(ordered_list, line, 1)[1]
-        nodes.extend(text_to_textnodes(line))
-    print(nodes)
-    nodes = list(map(lambda textnode: text_node_to_html_node(textnode), nodes))
-    list_items_parents = []
-    for node in nodes:
-        list_items_parents.append(ParentNode("li", [node]))
-    return ParentNode("ol", list_items_parents)
+        text_nodes = text_to_textnodes(line)
+        html_nodes = []
+        for node in text_nodes:
+            html_nodes.append(text_node_to_html_node(node))
+        nodes.append(ParentNode("li", html_nodes))
+    return ParentNode("ol", nodes)
+
 
 def create_ulist(block):
     nodes = []
-    print(block)
     lines = block.split("\n")
     for line in lines:
         line = re.split(unordered_list, line, 1)[1]
-        nodes.extend(text_to_textnodes(line))
-    nodes = list(map(lambda textnode: text_node_to_html_node(textnode), nodes))
-    list_items_parents = []
-    for node in nodes:
-        list_items_parents.append(ParentNode("li", [node]))
-    return ParentNode("ul", list_items_parents)
+        text_nodes = text_to_textnodes(line)
+        html_nodes = []
+        for node in text_nodes:
+            html_nodes.append(text_node_to_html_node(node))
+        nodes.append(ParentNode("li", html_nodes))
+    return ParentNode("ul", nodes)
 
 def create_code(block):
     nodes = []
@@ -133,7 +128,6 @@ def create_code(block):
     for line in lines:
         nodes.extend(text_to_textnodes(line))
     nodes = list(map(lambda textnode: text_node_to_html_node(textnode), nodes))
-    print(nodes)
     return ParentNode("pre", [ParentNode("code", nodes)])
 
 def create_quote(block):
@@ -141,6 +135,7 @@ def create_quote(block):
     block = block.lstrip("> ")
     lines = block.split("\n")
     for line in lines:
+        line = line.lstrip(">")
         nodes.extend(text_to_textnodes(line))
     nodes = list(map(lambda textnode: text_node_to_html_node(textnode), nodes))
     return ParentNode("blockquote", nodes)

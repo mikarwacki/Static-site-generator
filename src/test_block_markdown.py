@@ -3,7 +3,7 @@ import unittest
 from block_markdown import (
     markdown_to_blokcs,
     block_to_block,
-    markdown_to_html
+    markdown_to_html_node
 )
 
 class TestBlockMarkdown(unittest.TestCase):
@@ -70,15 +70,15 @@ class TestMarkdownToHtml(unittest.TestCase):
 
     def test_markdown_paragraph(self):
         markdown = '''> some new quote '''
-        expected_html = ["<blockquote>some new quote</blockquote>"]
-        html = markdown_to_html(markdown)
-        self.assertEqual(html, expected_html)
+        expected_html = "<div><blockquote>some new quote</blockquote></div>"
+        html = markdown_to_html_node(markdown)
+        self.assertEqual(html.to_html(), expected_html)
     
     def test_markdown_code(self):
         markdown = '''```some new code in here```'''
-        expected_html = ["<pre><code>some new code in here</code></pre>"]
-        html = markdown_to_html(markdown)
-        self.assertEqual(html, expected_html)
+        expected_html = "<div><pre><code>some new code in here</code></pre></div>"
+        html = markdown_to_html_node(markdown)
+        self.assertEqual(html.to_html(), expected_html)
     
     def test_full_markdown_file(self):
         markdown = '''
@@ -98,16 +98,110 @@ class TestMarkdownToHtml(unittest.TestCase):
         1. ordered list
         2. item
         '''
-        expected_html = ["<h1>this is the heading one</h1>", 
-                     "<h2>this is another heading</h2>", 
-                     "<p>here <b>starts bold</b> the paragaph\n</p>", 
-                     "<blockquote>here goes the <i>italic</i> quote</blockquote>",
-                     "<pre><code>some code</code></pre>",
-                     "<ul><li>random list</li><li>item</li><li>item</li></ul>",
-                     "<ol><li>ordered list</li><li>item</li></ol>"]
-        html = markdown_to_html(markdown)
-        self.assertEqual(html, expected_html)
+        expected_html = "<div><h1>this is the heading one</h1><h2>this is another heading</h2><p>here <b>starts bold</b> the paragaph</p><blockquote>here goes the <i>italic</i> quote</blockquote><pre><code>some code</code></pre><ul><li>random list</li><li>item</li><li>item</li></ul><ol><li>ordered list</li><li>item</li></ol></div>"
+        html = markdown_to_html_node(markdown)
+        self.assertEqual(html.to_html(), expected_html)
 
+
+    def test_paragraph(self):
+        md = """
+This is **bolded** paragraph
+text in a p
+tag here
+
+"""
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><p>This is <b>bolded</b> paragraph text in a p tag here</p></div>",
+        )
+
+    def test_paragraphs(self):
+        md = """
+This is **bolded** paragraph
+text in a p
+tag here
+
+This is another paragraph with *italic* text and `code` here
+
+"""
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><p>This is <b>bolded</b> paragraph text in a p tag here</p><p>This is another paragraph with <i>italic</i> text and <code>code</code> here</p></div>",
+        )
+
+    def test_lists(self):
+        md = """
+- This is a list
+- with items
+- and *more* items
+
+1. This is an `ordered` list
+2. with items
+3. and more items
+
+"""
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><ul><li>This is a list</li><li>with items</li><li>and <i>more</i> items</li></ul><ol><li>This is an <code>ordered</code> list</li><li>with items</li><li>and more items</li></ol></div>",
+        )
+
+    def test_headings(self):
+        md = """
+# this is an h1
+
+this is paragraph text
+
+## this is an h2
+
+"""
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><h1>this is an h1</h1><p>this is paragraph text</p><h2>this is an h2</h2></div>",
+        )
+
+    def test_blockquote(self):
+        md = """
+> This is a
+> blockquote block
+
+this is paragraph text
+
+"""
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><blockquote>This is a blockquote block</blockquote><p>this is paragraph text</p></div>",
+        )
+
+    def test_blockquote(self):
+        md = """
+> This is a
+> blockquote block
+
+this is paragraph text
+
+"""
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><blockquote>This is a blockquote block</blockquote><p>this is paragraph text</p></div>",
+        )
 
 
 if __name__ == "__main__":
