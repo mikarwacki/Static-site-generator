@@ -68,7 +68,9 @@ def markdown_to_html(markdown):
     parents = []
     for block in blocks:
         parent = create_parent_node(block)
-        if len(parent.children) > 0:
+        if block_to_block(block) == block_type_heading:
+            parents.extend(parent)
+        elif len(parent.children) > 0:
             parents.append(parent)
     print(parents)
     return list(map(lambda parent: parent.to_html(), parents))
@@ -144,11 +146,17 @@ def create_quote(block):
     return ParentNode("blockquote", nodes)
 
 def create_heading(block):
+    nodes = []
     split = block.split("\n")
     for line in split:
         count = count_hashes(line)
-        line = line.lstrip("#")
-        line = f"{count} {line}"
+        line = line.lstrip("# ")
+        text_nodes = text_to_textnodes(line)
+        html_nodes = []
+        for text_node in text_nodes:
+            html_nodes.append(text_node_to_html_node(text_node))
+        nodes.append(ParentNode(f"h{count}", html_nodes))
+    return nodes
 
 def count_hashes(line):
     count = 0
@@ -156,15 +164,3 @@ def count_hashes(line):
         if char == "#":
             count += 1
     return count
-
-def main():
-    markdown = '''```
-     new paragrapg
-     again **bold**
-     again *italic*```
-'''
-    parents = markdown_to_html(markdown)
-    print(parents)
-   
-
-main()
