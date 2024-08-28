@@ -9,7 +9,7 @@ heading = r"#{1,6}\s.*?"
 code = "```"
 quote = ">"
 unordered_list = r"[*-]\s.*?"
-ordered_list = r"[1-6]\.\s.*?"
+ordered_list = r"[1-9]\.\s.*?"
 
 
 block_type_paragraph = "paragraph"
@@ -26,6 +26,13 @@ block_type_to_tag = {
     block_type_heading: "h",
     block_type_paragraph: "p"
 }
+
+def extract_title(markdown):
+    lines = markdown.split("\n")
+    for line in lines:
+        if line[0] == '#':
+            return line[2:]
+    raise Exception("there is no header")
 
 def markdown_to_blokcs(markdown):
     blocks = markdown.split("\n")

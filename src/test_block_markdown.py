@@ -3,7 +3,8 @@ import unittest
 from block_markdown import (
     markdown_to_blokcs,
     block_to_block,
-    markdown_to_html_node
+    markdown_to_html_node,
+    extract_title
 )
 
 class TestBlockMarkdown(unittest.TestCase):
@@ -202,6 +203,19 @@ this is paragraph text
             html,
             "<div><blockquote>This is a blockquote block</blockquote><p>this is paragraph text</p></div>",
         )
+
+class TestExtractTitle(unittest.TestCase):
+
+    def test_extract_title(self):
+        markdown = "# header"
+        expected = "header"
+        result = extract_title(markdown) 
+        self.assertEqual(result, expected)
+
+    def test_no_title(self):
+        markdown = "no header"
+        with self.assertRaises(Exception):
+            extract_title(markdown)
 
 
 if __name__ == "__main__":
