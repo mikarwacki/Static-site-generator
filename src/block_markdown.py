@@ -27,14 +27,6 @@ block_type_to_tag = {
     block_type_paragraph: "p"
 }
 
-def extract_title(markdown):
-    lines = markdown.split("\n")
-    for line in lines:
-        print(line)
-        if line[0] == '#':
-            return line[2:]
-    raise Exception("there is no header")
-
 def markdown_to_blokcs(markdown):
     blocks = markdown.split("\n")
     non_empty_blocks = []

@@ -1,10 +1,10 @@
 import os, shutil
-from markdown_to_html import generate_page
+from markdown_to_html import generate_page, generate_pages_recursive
 from copystatic import copy_files_recursive
 
 public_path = "./public" 
 static_path = "./static"
-from_path = "./content/index.md"
+from_path = "./content"
 template_path = "./template.html"
 
 def main():
@@ -14,6 +14,6 @@ def main():
     print("Copying static files to public directory...")
     copy_files_recursive(static_path, public_path)
 
-    generate_page(from_path, template_path, public_path)
+    generate_pages_recursive(from_path, template_path, public_path)
 
 main()
