@@ -30,6 +30,7 @@ block_type_to_tag = {
 def extract_title(markdown):
     lines = markdown.split("\n")
     for line in lines:
+        print(line)
         if line[0] == '#':
             return line[2:]
     raise Exception("there is no header")
