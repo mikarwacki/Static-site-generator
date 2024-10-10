@@ -4,8 +4,8 @@ from block_markdown import (
     markdown_to_blokcs,
     block_to_block,
     markdown_to_html_node,
-    extract_title
 )
+from markdown_to_html import extract_title
 
 class TestBlockMarkdown(unittest.TestCase):
 
